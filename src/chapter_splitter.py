@@ -3,22 +3,23 @@ from typing import List, Tuple
 import logging
 from docling_core.types.doc import DoclingDocument, TextItem, NodeItem
 
+
 class ChapterSplitter:
     def __init__(self, output_dir: Path):
         self.chapters_dir = output_dir / "chapters"
         self.logger = logging.getLogger(__name__)
-        
+
     def split_document(
-        self, 
-        doc: DoclingDocument, 
-        heading_level: int = 1, 
-        min_words: int = 500, 
-        max_words: int = 8000
+        self,
+        doc: DoclingDocument,
+        heading_level: int = 1,
+        min_words: int = 500,
+        max_words: int = 8000,
     ) -> List[Tuple[str, str, Path]]:
         """
         Split document into chapters based on heading levels with word count constraints.
         Returns list of tuples containing (title, content, file_path).
-        
+
         Args:
             doc: Document to split
             heading_level: Level of headings to split on (1-6)
@@ -36,8 +37,8 @@ class ChapterSplitter:
                 return False
             # Count '#' characters at start of text to determine heading level
             text = item.text.strip()
-            if text.startswith('#'):
-                level = text.split(' ')[0].count('#')
+            if text.startswith("#"):
+                level = text.split(" ")[0].count("#")
                 is_target = level == heading_level
                 if is_target:
                     self.logger.debug(f"Found heading at target level {heading_level}: {text}")
@@ -54,58 +55,62 @@ class ChapterSplitter:
             if level >= 6:  # Max heading level
                 self.logger.debug(f"Reached max heading level for {title}, splitting by paragraphs")
                 # Split by paragraphs as fallback
-                paragraphs = content.split('\n\n')
+                paragraphs = content.split("\n\n")
                 result = []
                 current_content = []
                 current_words = 0
-                
+
                 for p in paragraphs:
                     p_words = get_word_count(p)
                     if current_words + p_words > max_words:
                         if current_content:
                             part_num = len(result) + 1
-                            self.logger.debug(f"Creating new part {part_num} for {title} due to word limit")
-                            result.append((f"{title} (Part {part_num})", 
-                                         '\n\n'.join(current_content)))
+                            self.logger.debug(
+                                f"Creating new part {part_num} for {title} due to word limit"
+                            )
+                            result.append(
+                                (f"{title} (Part {part_num})", "\n\n".join(current_content))
+                            )
                         current_content = [p]
                         current_words = p_words
                     else:
                         current_content.append(p)
                         current_words += p_words
-                
+
                 if current_content:
-                    result.append((f"{title} (Part {len(result)+1})", 
-                                 '\n\n'.join(current_content)))
+                    result.append(
+                        (f"{title} (Part {len(result) + 1})", "\n\n".join(current_content))
+                    )
                 return result
-            
+
             # Create new processor with increased heading level
             temp_chapters = []
             current_content = []
             current_subtitle = title
-            
-            lines = content.split('\n')
+
+            lines = content.split("\n")
             for line in lines:
-                if line.strip().startswith('#' * (level + 1) + ' '):
+                if line.strip().startswith("#" * (level + 1) + " "):
                     if current_content:
-                        temp_chapters.append((current_subtitle, '\n'.join(current_content)))
+                        temp_chapters.append((current_subtitle, "\n".join(current_content)))
                         current_content = []
-                    current_subtitle = line.strip('#').strip()
+                    current_subtitle = line.strip("#").strip()
                 current_content.append(line)
-                
+
             if current_content:
-                temp_chapters.append((current_subtitle, '\n'.join(current_content)))
-            
+                temp_chapters.append((current_subtitle, "\n".join(current_content)))
+
             return temp_chapters
 
         def process_node(node: NodeItem):
             nonlocal current_chapter, current_title
-            
+
             # Handle nodes without children attribute (e.g., RefItem)
-            if not hasattr(node, 'children'):
+            if not hasattr(node, "children"):
                 if isinstance(node, TextItem):
                     current_chapter.append(node.text)
                 return
-            
+
             for child in node.children:
                 if isinstance(child, TextItem):
                     if is_heading(child):
@@ -132,7 +137,7 @@ class ChapterSplitter:
         for title, content in chapters:
             word_count = get_word_count(content)
             self.logger.debug(f"Chapter '{title}' has {word_count} words")
-        
+
             if word_count < min_words:
                 # Skip chapters that are too short
                 self.logger.debug(f"Skipping chapter '{title}' - too short ({word_count} words)")
@@ -155,9 +160,9 @@ class ChapterSplitter:
         self.logger.info(f"Writing {len(processed_chapters)} final chapters to disk")
         result = []
         for idx, (title, content) in enumerate(processed_chapters):
-            chapter_filename = f"{idx+1:02d}_{self._sanitize_filename(title)}.md"
+            chapter_filename = f"{idx + 1:02d}_{self._sanitize_filename(title)}.md"
             chapter_path = self.chapters_dir / chapter_filename
-            self.logger.debug(f"Writing chapter {idx+1}: {chapter_path}")
+            self.logger.debug(f"Writing chapter {idx + 1}: {chapter_path}")
             chapter_path.write_text(content)
             result.append((title, content, chapter_path))
 

@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "study-tools"
+version = "0.1.0"
+description = "Process documents into structured markdown with chapter splitting and image extraction"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Document Processor Team" }
+]
+dependencies = [
+    "docling", # Document Processing
+    "docling_core", # Document processing core components
+    "streamlit", # Web UI
+    "pydantic", # Data modeling
+    "ruff>=0.9.10",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",            # Code formatting and linting
+    "pytest",         # Testing
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "I", "N", "UP", "ANN", "C4", "SIM", "TD", "PL"]
+ignore = ["ANN101", "ANN102"]  # Ignore missing type annotations for self and cls
+fixable = ["ALL"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401", "E402"]  # Unused imports and imports not at top of file
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
