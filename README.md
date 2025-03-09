@@ -1,61 +1,60 @@
-# Document Processor
+# Study Tools
 
-A Streamlit application that processes PDF, DOCX, and image files to create structured markdown documents with chapter splitting and image extraction.
+A Python application for processing educational documents, splitting them into chapters, and extracting images to make study materials more accessible.
 
 ## Features
 
-- Upload PDF, DOCX, and image files
-- Convert documents to Markdown format
-- Split documents into chapters
-- Extract and organize images
-- OCR support for images and PDFs
-- Clean directory structure for outputs
-
-## Output Structure
-
-```
-output/
-├── document-name/
-│   ├── images/
-│   │   └── extracted-images
-│   ├── chapters/
-│   │   └── split-content
-│   └── document-name.md
-```
-
-## Requirements
-
-- Python 3.11 or higher
-- Docling library
-- Streamlit
+- Process PDF, DOCX, and image files
+- Split documents into chapters based on headings
+- Extract and organize embedded images
+- Convert documents to clean markdown format
+- Configure chapter splitting based on heading levels and word counts
+- Streamlit-based web interface for easy use
 
 ## Installation
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   pip install .
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/jjgroenendijk/study-tools.git
+cd study-tools
 
-## Running the Application
+# Install the package
+pip install -e .
+```
 
-Start the Streamlit app:
+See the [Installation Guide](docs/installation.md) for more detailed instructions.
+
+## Usage
+
+The recommended way to run the application is with our custom launcher script:
+
+```bash
+python run_app.py
+```
+
+Alternatively, you can run the Streamlit app directly:
+
 ```bash
 streamlit run src/app.py
 ```
 
-## Usage
+See the [User Guide](docs/user_guide.md) for instructions on using the application.
 
-1. Open the application in your web browser
-2. Upload a document using the file picker
-3. Wait for processing to complete
-4. Browse the generated markdown files and extracted images
-5. Use the chapter navigation to view split content
+## Documentation
 
-## Document Processing Features
+- [Installation Guide](docs/installation.md)
+- [User Guide](docs/user_guide.md)
+- [Development Guide](docs/development.md)
+- [Troubleshooting Guide](docs/troubleshooting.md)
 
-- OCR for scanned documents and images
-- Table structure detection
-- Chapter detection and splitting
-- Image extraction and linking
-- Markdown conversion with proper formatting
+## Known Issues
+
+There's a known issue with Streamlit and PyTorch that can cause errors when running the application directly with `streamlit run`. If you encounter this, please use our custom launcher script (`python run_app.py`) or see the [Troubleshooting Guide](docs/troubleshooting.md) for solutions.
+
+## Development
+
+See the [Development Guide](docs/development.md) for details on the project structure and how to contribute.
+
+## License
+
+This project is licensed under the MIT License.
