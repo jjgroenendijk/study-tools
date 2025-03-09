@@ -1,2 +1,11 @@
 [server]
-watchFileSystem = false
+# Disable watching certain packages that cause errors
+enableStaticServing = true
+runOnSave = true
+
+[global]
+# Don't watch PyTorch modules
+developmentMode = false
+
+[logger]
+level = "info"
